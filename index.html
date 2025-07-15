@@ -125,11 +125,6 @@
   <body>
     <div class="container">
       <h1>Stardate Calculator</h1>
-      <div class="today-info">
-        <div><strong>Today's Date:</strong> <span id="today-date"></span></div>
-        <div><strong>Star Trek Epoch Stardate:</strong> <span id="today-st-stardate"></span></div>
-        <div><strong>Earth Epoch Stardate:</strong> <span id="today-earth-stardate"></span></div>
-      </div>
       <div id="date-to-stardate-section">
         <form id="stardate-form">
           <label for="date">Select Date</label>
@@ -140,18 +135,25 @@
             <option value="2323">Star Trek Epoch</option>
           </select>
         </form>
-        <div id="result"></div>
-      </div>
-      <!-- Stardate to Date Converter -->
-      <div id="stardate-to-date-inline" style="margin-top: 1.5rem; text-align:center;">
-        <label for="inline-stardate-input" style="font-weight:bold; display:block; margin-bottom:0.5rem;">Stardate to Date</label>
-        <input type="text" id="inline-stardate-input" placeholder="Enter stardate" style="width:100%; min-width:120px; max-width:300px; margin:0 auto; display:block; font-size:1rem; padding:0.5rem 1rem; border-radius:6px; border:none; box-sizing:border-box; text-align:center;" inputmode="decimal" pattern="[0-9]*" />
-        <label for="inline-epoch-select" style="font-weight:bold; display:block; margin:1rem 0 0.5rem 0;">Select Epoch</label>
-        <select id="inline-epoch-select" style="width:100%; min-width:120px; max-width:300px; margin:0 auto; display:block; font-size:1rem; padding:0.5rem 1rem; border-radius:6px; border:none; box-sizing:border-box;">
-          <option value="1957">Space Age Epoch</option>
-          <option value="2323">Star Trek Epoch</option>
-        </select>
-        <div id="inline-stardate-result" style="margin-top:0.5rem; color:#00c6ff; font-family:'Orbitron', Arial, sans-serif;"></div>
+        <div style="margin-top:1.5rem; text-align:center;">
+          <span style="font-size:1.2rem; font-family:'Orbitron', Arial, sans-serif; color:#00c6ff; margin-right:0.5em;">Stardate:</span>
+          <span style="position:relative; display:inline-block;">
+            <span id="result" contenteditable="true" tabindex="0" style="font-size:1.2rem; font-family:'Orbitron', Arial, sans-serif; color:#00c6ff; outline:none; min-width:100px; display:inline-block; cursor:pointer; border-bottom: 1.5px dotted #00c6ff; transition: border-color 0.2s;"></span>
+            <span class="edit-tooltip" style="visibility:hidden; opacity:0; background:#232526; color:#fff; text-align:center; border-radius:6px; padding:0.5em 1em; position:absolute; left:50%; transform:translateX(-50%); bottom:130%; z-index:1; font-size:0.95em; transition:opacity 0.2s; white-space:nowrap; box-shadow:0 2px 8px rgba(0,0,0,0.15);">Edit stardate to convert to Earth date</span>
+          </span>
+        </div>
+        <style>
+          #result:focus, #result:hover {
+            border-bottom: 2.5px solid #00c6ff;
+            background: rgba(0,198,255,0.08);
+            border-radius: 6px 6px 0 0;
+          }
+          #result:focus + .edit-tooltip,
+          #result:hover + .edit-tooltip {
+            visibility: visible !important;
+            opacity: 1 !important;
+          }
+        </style>
       </div>
       <!-- Birthday Modal -->
     <div id="birthday-modal" class="modal" style="display: none">
