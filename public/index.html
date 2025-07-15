@@ -75,6 +75,44 @@
         font-family: "Orbitron", Arial, sans-serif;
         color: #00c6ff;
       }
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.7);
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-content {
+        background: #232526;
+        margin: auto;
+        padding: 2rem 2.5rem;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        text-align: center;
+        color: #fff;
+        position: relative;
+        min-width: 300px;
+        max-width: 90vw;
+      }
+      .close {
+        color: #aaa;
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        font-size: 2rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+      .close:hover {
+        color: #fff;
+      }
     </style>
   </head>
   <body>
@@ -97,6 +135,20 @@
       </form>
       <div id="result"></div>
     </div>
+    <!-- Birthday Modal -->
+    <div id="birthday-modal" class="modal" style="display: none">
+      <div class="modal-content">
+        <span id="close-modal" class="close">&times;</span>
+        <h2 id="birthday-message"></h2>
+      </div>
+    </div>
+    <script id="birthdays-data"></script>
+    <script>
+      // Local test fallback: only sets if not already injected by host
+      if (typeof window.BIRTHDAYS === "undefined") {
+        window.BIRTHDAYS = [];
+      }
+    </script>
     <script src="script.js"></script>
   </body>
 </html>
