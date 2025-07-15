@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stardate Calculator</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background: linear-gradient(135deg, #232526 0%, #414345 100%);
+        min-height: 100vh;
+        margin: 0;
+        font-family: "Roboto", Arial, sans-serif;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .container {
+        background: rgba(30, 32, 34, 0.95);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        padding: 2rem 2.5rem;
+        max-width: 400px;
+        width: 100%;
+        margin: 2rem 0;
+        text-align: center;
+      }
+      h1 {
+        font-family: "Orbitron", Arial, sans-serif;
+        font-size: 2.2rem;
+        margin-bottom: 1.5rem;
+        letter-spacing: 2px;
+      }
+      .today-info {
+        margin-bottom: 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        padding: 1rem;
+      }
+      label {
+        display: block;
+        margin: 1rem 0 0.5rem 0;
+        font-weight: bold;
+      }
+      input,
+      select,
+      button {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: none;
+        margin-bottom: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      button {
+        background: #00c6ff;
+        color: #232526;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      button:hover {
+        background: #0072ff;
+        color: #fff;
+      }
+      #result {
+        margin-top: 1.5rem;
+        font-size: 1.2rem;
+        font-family: "Orbitron", Arial, sans-serif;
+        color: #00c6ff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Stardate Calculator</h1>
+      <div class="today-info">
+        <div><strong>Today's Date:</strong> <span id="today-date"></span></div>
+        <div><strong>Star Trek Epoch Stardate:</strong> <span id="today-st-stardate"></span></div>
+        <div><strong>Earth Epoch Stardate:</strong> <span id="today-earth-stardate"></span></div>
+      </div>
+      <form id="stardate-form">
+        <label for="date">Select Date</label>
+        <input type="date" id="date" required />
+        <label for="epoch">Select Epoch</label>
+        <select id="epoch">
+          <option value="1957">Space Age Epoch</option>
+          <option value="2323">Star Trek Epoch</option>
+        </select>
+        <button type="submit">Calculate Stardate</button>
+      </form>
+      <div id="result"></div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
