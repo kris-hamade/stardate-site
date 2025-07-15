@@ -63,8 +63,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const container = document.querySelector(".container.transporter-effect");
     const beam = document.getElementById("transporter-beam");
 
-    // Combined handler: stardate + birthday
-    function onDateChange() {
+    // Combined handler: stardate + birthday + notable events
+    async function onDateChange() {
         // parse as local date (avoids timezone shift)
         const [y, m, d] = dateInput.value.split("-").map(Number);
         if (!y || !m || !d) return;
@@ -78,6 +78,25 @@ document.addEventListener("DOMContentLoaded", () => {
         const match = birthdays.find(b => b.month === m && b.day === d);
         if (match) {
             showBirthdayModal(`It's ${match.name}'s birthday! 🥳`);
+        }
+
+        // Notable events fetch (Wikipedia On This Day API)
+        const eventsDiv = document.getElementById('notable-events');
+        if (eventsDiv) {
+            eventsDiv.innerHTML = '<em>Loading notable events...</em>';
+            try {
+                const resp = await fetch(`https://en.wikipedia.org/api/rest_v1/feed/onthisday/events/${m}/${d}`);
+                if (!resp.ok) throw new Error('Failed to fetch events');
+                const data = await resp.json();
+                if (data.events && data.events.length > 0) {
+                    eventsDiv.innerHTML = `<strong>Notable Events on ${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}:</strong><ul style='margin-top:0.5em;'>` +
+                        data.events.slice(0, 7).map(ev => `<li><span style='color:#00c6ff;'>${ev.year}:</span> ${ev.text}</li>`).join('') + '</ul>';
+                } else {
+                    eventsDiv.innerHTML = '<em>No notable events found for this date.</em>';
+                }
+            } catch (e) {
+                eventsDiv.innerHTML = '<em>Could not load notable events.</em>';
+            }
         }
     }
 
