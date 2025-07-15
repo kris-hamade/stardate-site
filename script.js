@@ -36,6 +36,30 @@ function calculateStardate(year, month, day, epoch) {
     return round(starYear(year, epoch) + starDay(year, month, day));
 }
 
+// Helper: Convert stardate back to date (approximate)
+function stardateToDate(stardate, epoch) {
+    // Inverse of: stardate = 1000 * (year - epoch) + (1000 / daysInYear(year)) * dayOfYear(year, month, day)
+    // We'll solve for year first, then day of year, then month/day
+    // 1. Estimate year
+    let year = Math.floor(stardate / 1000 + epoch);
+    // 2. Calculate the stardate at the start of that year
+    let base = 1000 * (year - epoch);
+    // 3. Find dayOfYear
+    let dayFrac = stardate - base;
+    let daysInYr = daysInYear(year);
+    let dayOfYr = Math.round(dayFrac * daysInYr / 1000);
+    // Clamp dayOfYr
+    if (dayOfYr < 0) dayOfYr = 0;
+    if (dayOfYr >= daysInYr) {
+        year++;
+        dayOfYr = 0;
+    }
+    // 4. Convert dayOfYr to month/day
+    let date = new Date(year, 0, 1);
+    date.setDate(date.getDate() + dayOfYr);
+    return date;
+}
+
 // DOM logic
 function formatDate(date) {
     return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
@@ -89,13 +113,12 @@ document.addEventListener('DOMContentLoaded', function () {
         showBirthdayModal(todayBirthday.name);
     }
 
-    // Handle form submission
-    document.getElementById('stardate-form').addEventListener('submit', function (e) {
-        e.preventDefault();
+    // --- Live Stardate Calculation ---
+    function updateStardateResult() {
         const dateValue = dateInput.value;
         const epochValue = parseInt(document.getElementById('epoch').value, 10);
         if (!dateValue) {
-            document.getElementById('result').textContent = 'Please select a date.';
+            document.getElementById('result').textContent = '';
             return;
         }
         const [year, month, day] = dateValue.split('-').map(Number); // month and day are 1-based
@@ -107,7 +130,38 @@ document.addEventListener('DOMContentLoaded', function () {
         if (birthday) {
             showBirthdayModal(birthday.name);
         }
-    });
+    }
+    dateInput.addEventListener('input', updateStardateResult);
+    document.getElementById('epoch').addEventListener('change', updateStardateResult);
+    // Initial calculation
+    updateStardateResult();
+
+    // --- Stardate to Date Inline Converter ---
+    const inlineStardateInput = document.getElementById('inline-stardate-input');
+    const inlineEpochSelect = document.getElementById('inline-epoch-select');
+    const inlineStardateResult = document.getElementById('inline-stardate-result');
+
+    function updateInlineStardateResult() {
+        const stardateVal = parseFloat(inlineStardateInput.value);
+        const epochVal = parseInt(inlineEpochSelect.value, 10);
+        if (isNaN(stardateVal)) {
+            inlineStardateResult.textContent = '';
+            return;
+        }
+        try {
+            const date = stardateToDate(stardateVal, epochVal);
+            // Only show if valid
+            if (date instanceof Date && !isNaN(date)) {
+                inlineStardateResult.textContent = `Date: ${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+            } else {
+                inlineStardateResult.textContent = 'Invalid stardate.';
+            }
+        } catch (e) {
+            inlineStardateResult.textContent = 'Invalid stardate.';
+        }
+    }
+    inlineStardateInput.addEventListener('input', updateInlineStardateResult);
+    inlineEpochSelect.addEventListener('change', updateInlineStardateResult);
 
     // Modal close logic
     document.getElementById('close-modal').onclick = hideBirthdayModal;
