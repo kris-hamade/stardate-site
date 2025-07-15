@@ -32,7 +32,7 @@
       }
       h1 {
         font-family: "Orbitron", Arial, sans-serif;
-        font-size: 2.2rem;
+        font-size: 3.2rem;
         margin-bottom: 1.5rem;
         letter-spacing: 2px;
       }
@@ -44,8 +44,11 @@
       }
       label {
         display: block;
-        margin: 1rem 0 0.5rem 0;
+        margin: 1rem auto 0.5rem auto;
         font-weight: bold;
+        font-family: 'Orbitron', Arial, sans-serif;
+        text-align: center;
+        font-size: 1.5rem;
       }
       input,
       select,
@@ -78,7 +81,7 @@
       
       #result {
         margin-top: 1.5rem;
-        font-size: 1.2rem;
+        font-size: 1.5rem;
         font-family: "Orbitron", Arial, sans-serif;
         color: #00c6ff;
       }
@@ -120,10 +123,88 @@
       .close:hover {
         color: #fff;
       }
+      .transporter-effect {
+        opacity: 0;
+        filter: blur(18px) brightness(1.5);
+        position: relative;
+        transition: opacity 0.7s cubic-bezier(.4,2,.6,1), filter 1.2s cubic-bezier(.4,2,.6,1);
+      }
+      .transporter-effect.beamed-in {
+        opacity: 1;
+        filter: blur(0) brightness(1);
+      }
+      #transporter-beam {
+        background: repeating-linear-gradient(
+          90deg,
+          rgba(0,198,255,0.18) 0px,
+          rgba(0,198,255,0.28) 2px,
+          rgba(255,255,255,0.12) 6px,
+          rgba(0,198,255,0.18) 10px
+        );
+        animation: beam-shimmer 1.2s linear infinite;
+      }
+      @keyframes beam-shimmer {
+        0% { background-position-x: 0; }
+        100% { background-position-x: 60px; }
+      }
+      /* Editable stardate underline and tooltip */
+      #result:focus, #result:hover {
+        border-bottom: 2.5px solid #00c6ff;
+        background: rgba(0,198,255,0.08);
+        border-radius: 6px 6px 0 0;
+      }
+      #result:focus + .edit-tooltip,
+      #result:hover + .edit-tooltip {
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+      input,
+      select {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: 1.5px solid #00c6ff;
+        background: rgba(30, 40, 60, 0.85);
+        color: #e0f7fa;
+        font-family: 'Orbitron', Arial, sans-serif;
+        width: auto;
+        min-width: 120px;
+        max-width: 260px;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        box-sizing: border-box;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        box-shadow: 0 2px 8px 0 rgba(0,198,255,0.08);
+        outline: none;
+        text-align: center;
+      }
+      input:focus,
+      select:focus {
+        border-color: #00eaff;
+        box-shadow: 0 0 8px 2px #00eaff99;
+        background: rgba(30, 40, 60, 1);
+        color: #fff;
+      }
+      input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(0.7) sepia(1) saturate(5) hue-rotate(170deg);
+      }
+      /* Remove default arrow for select for a cleaner look */
+      select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg fill="%2300c6ff" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 0.7em center;
+        background-size: 1.2em;
+        padding-right: 2.2em;
+      }
     </style>
   </head>
   <body>
-    <div class="container">
+    <div id="transporter-beam" style="position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:2000; display:none;"></div>
+    <div class="container transporter-effect">
       <h1>Stardate Calculator</h1>
       <div id="date-to-stardate-section">
         <form id="stardate-form">
@@ -131,53 +212,45 @@
           <input type="date" id="date" required />
           <label for="epoch">Select Epoch</label>
           <select id="epoch">
-            <option value="1957">Space Age Epoch</option>
-            <option value="2323">Star Trek Epoch</option>
+            <option value="1957">Space Age</option>
+            <option value="2323">Star Trek</option>
           </select>
         </form>
         <div style="margin-top:1.5rem; text-align:center;">
-          <span style="font-size:1.2rem; font-family:'Orbitron', Arial, sans-serif; color:#00c6ff; margin-right:0.5em;">Stardate:</span>
+          <span style="font-size:1.5rem; font-family:'Orbitron', Arial, sans-serif; color:#00c6ff; margin-right:0.5em;">Stardate:</span>
           <span style="position:relative; display:inline-block;">
-            <span id="result" contenteditable="true" tabindex="0" style="font-size:1.2rem; font-family:'Orbitron', Arial, sans-serif; color:#00c6ff; outline:none; min-width:100px; display:inline-block; cursor:pointer; border-bottom: 1.5px dotted #00c6ff; transition: border-color 0.2s;"></span>
+            <span id="result" contenteditable="true" tabindex="0" ></span>
             <span class="edit-tooltip" style="visibility:hidden; opacity:0; background:#232526; color:#fff; text-align:center; border-radius:6px; padding:0.5em 1em; position:absolute; left:50%; transform:translateX(-50%); bottom:130%; z-index:1; font-size:0.95em; transition:opacity 0.2s; white-space:nowrap; box-shadow:0 2px 8px rgba(0,0,0,0.15);">Edit stardate to convert to Earth date</span>
           </span>
         </div>
-        <style>
-          #result:focus, #result:hover {
-            border-bottom: 2.5px solid #00c6ff;
-            background: rgba(0,198,255,0.08);
-            border-radius: 6px 6px 0 0;
-          }
-          #result:focus + .edit-tooltip,
-          #result:hover + .edit-tooltip {
-            visibility: visible !important;
-            opacity: 1 !important;
-          }
-        </style>
       </div>
       <!-- Birthday Modal -->
-    <div id="birthday-modal" class="modal" style="display: none">
-      <div class="modal-content">
-        <span id="close-modal" class="close">&times;</span>
-        <h2 id="birthday-message"></h2>
+      <div id="birthday-modal" class="modal" style="display: none">
+        <div class="modal-content">
+          <span id="close-modal" class="close">&times;</span>
+          <h2 id="birthday-message"></h2>
+        </div>
       </div>
+      <script id="birthdays-data"></script>
+      <script src="script.js"></script>
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const container = document.querySelector('.container.transporter-effect');
+          const beam = document.getElementById('transporter-beam');
+          // Show beam and start effect
+          beam.style.display = 'block';
+          setTimeout(() => {
+            container.classList.add('beamed-in');
+            beam.style.opacity = '1';
+            // Fade out beam
+            setTimeout(() => {
+              beam.style.transition = 'opacity 0.5s';
+              beam.style.opacity = '0';
+              setTimeout(() => { beam.style.display = 'none'; }, 500);
+            }, 900);
+          }, 100);
+        });
+      </script>
     </div>
-    <script id="birthdays-data"></script>
-    <script>
-      // Local test fallback: only sets if not already injected by host
-      if (typeof window.BIRTHDAYS === "undefined") {
-        window.BIRTHDAYS = [
-          { name: "Abbey", month: 12, day: 9 },
-          { name: "Austin", month: 8, day: 19 },
-          { name: "Chief", month: 3, day: 28 },
-          { name: "Matt", month: 5, day: 10 },
-          { name: "Panda", month: 11, day: 17 },
-          { name: "Royal", month: 5, day: 30 },
-          { name: "Val", month: 7, day: 5 },
-          { name: "Wars", month: 5, day: 22 },
-        ];
-      }
-    </script>
-    <script src="script.js"></script>
   </body>
 </html>
