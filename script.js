@@ -80,22 +80,55 @@ document.addEventListener("DOMContentLoaded", () => {
             showBirthdayModal(`It's ${match.name}'s birthday! 🥳`);
         }
 
-        // Notable events fetch (Wikipedia On This Day API)
+        // Notable events and famous birthdays fetch (Wikipedia On This Day API)
         const eventsDiv = document.getElementById('notable-events');
         if (eventsDiv) {
-            eventsDiv.innerHTML = '<em>Loading notable events...</em>';
+            eventsDiv.innerHTML = '<em>Loading notable events and birthdays...</em>';
             try {
-                const resp = await fetch(`https://en.wikipedia.org/api/rest_v1/feed/onthisday/events/${m}/${d}`);
-                if (!resp.ok) throw new Error('Failed to fetch events');
-                const data = await resp.json();
-                if (data.events && data.events.length > 0) {
-                    eventsDiv.innerHTML = `<strong>Notable Events on ${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}:</strong><ul style='margin-top:0.5em;'>` +
-                        data.events.slice(0, 7).map(ev => `<li><span style='color:#00c6ff;'>${ev.year}:</span> ${ev.text}</li>`).join('') + '</ul>';
+                // Fetch events and birthdays in parallel
+                const [eventsResp, birthsResp] = await Promise.all([
+                    fetch(`https://en.wikipedia.org/api/rest_v1/feed/onthisday/events/${m}/${d}`),
+                    fetch(`https://en.wikipedia.org/api/rest_v1/feed/onthisday/births/${m}/${d}`)
+                ]);
+                if (!eventsResp.ok || !birthsResp.ok) throw new Error('Failed to fetch events or birthdays');
+                const eventsData = await eventsResp.json();
+                const birthsData = await birthsResp.json();
+                console.log('Wikipedia On This Day API events:', eventsData);
+                console.log('Wikipedia On This Day API births:', birthsData);
+                let html = '';
+                // Events section
+                if (eventsData.events && eventsData.events.length > 0) {
+                    html += `<strong>Notable Events on ${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}:</strong><ul style='margin-top:0.5em;'>` +
+                        eventsData.events.slice(0, 7).map(ev => `<li><span style='color:#00c6ff;'>${ev.year}:</span> ${ev.text}</li>`).join('') + '</ul>';
                 } else {
-                    eventsDiv.innerHTML = '<em>No notable events found for this date.</em>';
+                    html += '<em>No notable events found for this date.</em>';
                 }
+                // Birthdays section
+                if (birthsData.births && birthsData.births.length > 0) {
+                    // Scoring function for relevance
+                    const keywords = [
+                        'president', 'actor', 'actress', 'nba', 'nfl', 'mlb', 'f1', 'musician', 'singer', 'rapper', 'artist', 'composer', 'director', 'producer', 'american', 'canadian', 'british', 'football', 'basketball', 'baseball', 'hockey', 'golfer', 'tennis', 'olympic', 'astronaut', 'scientist', 'inventor', 'author', 'writer', 'poet', 'politician', 'prime minister', 'governor', 'senator', 'congress', 'mayor', 'judge', 'supreme court', 'general', 'admiral', 'coach', 'star', 'celebrity', 'hollywood', 'broadway', 'tv', 'television', 'film', 'movie', 'oscar', 'emmy', 'grammy', 'tony', 'nobel', 'medal', 'champion', 'world champion', 'hall of fame', 'hall-of-fame', 'hall of famer', 'hall-of-famer'
+                    ];
+                    function score(b) {
+                        let s = 0;
+                        const text = b.text.toLowerCase();
+                        for (const k of keywords) {
+                            if (text.includes(k)) s++;
+                        }
+                        // Extra points for "American" or "president"
+                        if (text.includes('american')) s += 2;
+                        if (text.includes('president')) s += 2;
+                        return s;
+                    }
+                    const sortedBirths = birthsData.births.slice().sort((a, b) => score(b) - score(a));
+                    html += `<strong style='display:block; margin-top:1.2em;'>Famous Birthdays:</strong><ul style='margin-top:0.5em;'>` +
+                        sortedBirths.slice(0, 7).map(b => `<li><span style='color:#00c6ff;'>${b.year}:</span> ${b.text}</li>`).join('') + '</ul>';
+                } else {
+                    html += '<em>No famous birthdays found for this date.</em>';
+                }
+                eventsDiv.innerHTML = html;
             } catch (e) {
-                eventsDiv.innerHTML = '<em>Could not load notable events.</em>';
+                eventsDiv.innerHTML = '<em>Could not load notable events or birthdays.</em>';
             }
         }
     }
