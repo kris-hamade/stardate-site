@@ -1,170 +1,106 @@
 // Sputnik 1 launched on October 4, 1957
-const EARTH_EPOCH = 1957;
+const EARTH_EPOCH     = 1957;
 const STAR_TREK_EPOCH = 2323;
 
-function starYear(year, epoch) {
-    return 1000 * (year - epoch);
+// — Stardate ↔ Earth-date helpers —
+
+function isLeapYear(y) {
+  return new Date(y, 1, 29).getMonth() === 1;
+}
+function daysInYear(y) {
+  return isLeapYear(y) ? 366 : 365;
+}
+function dayOfYear(y, m, d) {
+  const cum = [0,31,59,90,120,151,181,212,243,273,304,334];
+  let doy = cum[m-1] + (d-1);
+  if (m >= 3 && isLeapYear(y)) doy++;
+  return doy;
+}
+function starYear(y, ep) { return 1000 * (y - ep); }
+function starDay(y, m, d) { return (1000 / daysInYear(y)) * dayOfYear(y,m,d); }
+function round2(n) { return Math.round(n * 100) / 100; }
+function calculateStardate(y,m,d,ep) { return round2(starYear(y,ep) + starDay(y,m,d)); }
+function stardateToDate(sd, ep) {
+  let y = Math.floor(sd/1000 + ep);
+  let base = 1000*(y-ep);
+  let frac = sd - base;
+  let dim = daysInYear(y);
+  let doy = Math.round(frac * dim / 1000);
+  if (doy >= dim) { y++; doy = 0; }
+  let dt = new Date(y,0,1);
+  dt.setDate(dt.getDate() + doy);
+  return dt;
 }
 
-function starDay(year, month, day) {
-    return (1000 / daysInYear(year)) * dayOfYear(year, month, day);
-}
+// — Modal helpers —
 
-function daysInYear(year) {
-    return isLeapYear(year) ? 366 : 365;
+function showBirthdayModal(msg) {
+  const modal = document.getElementById("birthday-modal");
+  document.getElementById("birthday-message").textContent = msg;
+  modal.style.display = "flex";
 }
-
-function dayOfYear(year, month, day) {
-    // month is 0-indexed for Date, but we use 1-based for birthday logic
-    var dayOfYear = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334][month - 1] + day - 1;
-    if (month >= 3 && isLeapYear(year)) { // month >= 3 because month is 1-based
-        dayOfYear++;
-    }
-    return dayOfYear;
-}
-
-function isLeapYear(year) {
-    return new Date(year, 1, 29).getMonth() === 1;
-}
-
-function round(number) {
-    return Math.round(number * 100) / 100;
-}
-
-function calculateStardate(year, month, day, epoch) {
-    // month is 1-based for this function
-    return round(starYear(year, epoch) + starDay(year, month, day));
-}
-
-// Helper: Convert stardate back to date (approximate)
-function stardateToDate(stardate, epoch) {
-    // Inverse of: stardate = 1000 * (year - epoch) + (1000 / daysInYear(year)) * dayOfYear(year, month, day)
-    // We'll solve for year first, then day of year, then month/day
-    // 1. Estimate year
-    let year = Math.floor(stardate / 1000 + epoch);
-    // 2. Calculate the stardate at the start of that year
-    let base = 1000 * (year - epoch);
-    // 3. Find dayOfYear
-    let dayFrac = stardate - base;
-    let daysInYr = daysInYear(year);
-    let dayOfYr = Math.round(dayFrac * daysInYr / 1000);
-    // Clamp dayOfYr
-    if (dayOfYr < 0) dayOfYr = 0;
-    if (dayOfYr >= daysInYr) {
-        year++;
-        dayOfYr = 0;
-    }
-    // 4. Convert dayOfYr to month/day
-    let date = new Date(year, 0, 1);
-    date.setDate(date.getDate() + dayOfYr);
-    return date;
-}
-
-// DOM logic
-function formatDate(date) {
-    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-}
-
-// Birthday easter egg logic
-function getBirthdays() {
-    // window.BIRTHDAYS should be injected by the host as an array of {name, month (1-based), day}
-    return Array.isArray(window.BIRTHDAYS) ? window.BIRTHDAYS : [];
-}
-
-function checkBirthday(month, day) {
-    // month and day are 1-based
-    const birthdays = getBirthdays();
-    return birthdays.find(b => b.month === month && b.day === day);
-}
-
-function showBirthdayModal(name) {
-    const modal = document.getElementById('birthday-modal');
-    const message = document.getElementById('birthday-message');
-    message.textContent = `That is ${name}'s Birthday! 🎉🎉`;
-    modal.style.display = 'flex';
-}
-
 function hideBirthdayModal() {
-    document.getElementById('birthday-modal').style.display = 'none';
+  document.getElementById("birthday-modal").style.display = "none";
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    const today = new Date();
-    // Set default date input to today
-    const dateInput = document.getElementById('date');
-    dateInput.valueAsDate = today;
-    // Set default date input to today if empty
-    if (!dateInput.value) {
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        dateInput.value = `${yyyy}-${mm}-${dd}`;
-    }
+document.addEventListener("DOMContentLoaded", () => {
+  const dateInput   = document.getElementById("date");
+  const epochSelect = document.getElementById("epoch");
+  const resultSpan  = document.getElementById("result");
+  const closeBtn    = document.getElementById("close-modal");
+  const modalBg     = document.getElementById("birthday-modal");
+  const container   = document.querySelector(".container.transporter-effect");
+  const beam        = document.getElementById("transporter-beam");
 
-    // Birthday check for today
-    const todayBirthday = checkBirthday(today.getMonth() + 1, today.getDate());
-    if (todayBirthday) {
-        showBirthdayModal(todayBirthday.name);
-    }
+  // 1) Handler for date changes
+  function onDateChange() {
+    const d = new Date(dateInput.value);
+    if (isNaN(d)) return;
 
-    // --- Two-way binding for editable stardate ---
-    const stardateResult = document.getElementById('result');
-    let lastChanged = null; // 'date' or 'stardate'
+    // birthday modal?
+    const m = d.getMonth()+1, day = d.getDate();
+    const match = (window.BIRTHDAYS||[]).find(b => b.month===m && b.day===day);
+    if (match) showBirthdayModal(`It's ${match.name}'s birthday! 🥳`);
 
-    function updateStardateResult() {
-        if (lastChanged === 'stardate') return; // Prevent loop
-        lastChanged = 'date';
-        const dateValue = dateInput.value;
-        const epochValue = parseInt(document.getElementById('epoch').value, 10);
-        if (!dateValue) {
-            stardateResult.textContent = '';
-            lastChanged = null;
-            return;
-        }
-        const [year, month, day] = dateValue.split('-').map(Number); // month and day are 1-based
-        const stardate = calculateStardate(year, month, day, epochValue);
-        stardateResult.textContent = stardate;
-        // Birthday check for selected date
-        const birthday = checkBirthday(month, day);
-        if (birthday) {
-            showBirthdayModal(birthday.name);
-        }
-        lastChanged = null;
-    }
+    // stardate
+    const sd = calculateStardate(d.getFullYear(), m, day, parseInt(epochSelect.value,10));
+    resultSpan.textContent = sd;
+  }
 
-    function updateDateFromStardate() {
-        if (lastChanged === 'date') return; // Prevent loop
-        lastChanged = 'stardate';
-        const stardateVal = parseFloat(stardateResult.textContent);
-        const epochVal = parseInt(document.getElementById('epoch').value, 10);
-        if (isNaN(stardateVal)) {
-            lastChanged = null;
-            return;
-        }
-        const date = stardateToDate(stardateVal, epochVal);
-        if (date instanceof Date && !isNaN(date)) {
-            // Format as yyyy-mm-dd for input
-            const yyyy = date.getFullYear();
-            const mm = String(date.getMonth() + 1).padStart(2, '0');
-            const dd = String(date.getDate()).padStart(2, '0');
-            dateInput.value = `${yyyy}-${mm}-${dd}`;
-        }
-        lastChanged = null;
-    }
+  // 2) Wire up listeners
+  dateInput.addEventListener("change", onDateChange);
+  epochSelect.addEventListener("change", () => dateInput.dispatchEvent(new Event("change")));
+  resultSpan.addEventListener("blur", () => {
+    const sd = parseFloat(resultSpan.textContent);
+    if (isNaN(sd)) return;
+    const dt = stardateToDate(sd, parseInt(epochSelect.value,10));
+    dateInput.value = dt.toISOString().slice(0,10);
+    dateInput.dispatchEvent(new Event("change"));
+  });
 
-    dateInput.addEventListener('input', updateStardateResult);
-    document.getElementById('epoch').addEventListener('change', function() {
-        updateStardateResult();
-        // Also update date if stardate was last changed
-        if (lastChanged === 'stardate') updateDateFromStardate();
-    });
-    stardateResult.addEventListener('input', updateDateFromStardate);
-    // Initial calculation
-    updateStardateResult();
+  closeBtn.addEventListener("click", hideBirthdayModal);
+  modalBg.addEventListener("click", e => { if (e.target===modalBg) hideBirthdayModal(); });
 
-    // Modal close logic
-    document.getElementById('close-modal').onclick = hideBirthdayModal;
-    document.getElementById('birthday-modal').onclick = function(e) {
-        if (e.target === this) hideBirthdayModal();
-    };
+  // 3) Auto-set today's date & trigger calculation
+  const todayStr = new Date().toISOString().slice(0,10);
+  dateInput.value = todayStr;
+  dateInput.dispatchEvent(new Event("change"));
+
+  // 4) Transporter beam effect
+  beam.style.display = "block";
+  setTimeout(() => {
+    container.classList.add("beamed-in");
+    beam.style.opacity = "1";
+    beam.style.animation = "beam-shimmer 1.2s linear infinite";
+    setTimeout(() => {
+      beam.style.transition = "opacity 0.5s";
+      beam.style.opacity = "0";
+      setTimeout(() => beam.style.display = "none", 500);
+    }, 900);
+  }, 100);
+
+  // 5) Page-load birthday (today)
+  const now = new Date(), mm = now.getMonth()+1, dd = now.getDate();
+  const todayMatch = (window.BIRTHDAYS||[]).find(b => b.month===mm && b.day===dd);
+  if (todayMatch) showBirthdayModal(`Happy Birthday, ${todayMatch.name}! 🎉`);
 });
