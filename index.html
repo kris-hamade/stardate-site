@@ -113,14 +113,17 @@
         min-width: 4ch;
         padding: 0.2ch 0.4ch;
         cursor: text;
+        border-bottom: 2px solid #00c6ff;
+        transition: border-bottom-color 0.2s, background 0.2s;
       }
       /* Material underline + tooltip */
       #result:focus,
       #result:hover {
-        border-bottom: 2.5px solid #00c6ff;
+        border-bottom: 2px solid #00eaff;
         background: rgba(0, 198, 255, 0.08);
         border-radius: 6px 6px 0 0;
         outline: none;
+        box-shadow: 0 1px 0 0 #00eaff;
       }
       .edit-tooltip {
         visibility: hidden;

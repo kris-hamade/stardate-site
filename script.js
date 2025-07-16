@@ -2,6 +2,9 @@
 // Stardate ↔ Earth‐date helpers
 // ————————————————
 
+const numberOfEvents = 10;
+const numberOfBirthdays = 7;
+
 function isLeapYear(y) {
     return new Date(y, 1, 29).getMonth() === 1;
 }
@@ -48,6 +51,19 @@ function showBirthdayModal(msg) {
 
 function hideBirthdayModal() {
     document.getElementById("birthday-modal").style.display = "none";
+}
+
+// ————————————————
+// Event filtering helpers
+// ————————————————
+
+function isViolentEvent(eventText) {
+    const violentKeywords = [
+        'war', 'battle', 'attack', 'bomb', 'bombing', 'explosion', 'exploded', 'killed', 'killing', 'murder', 'murdered', 'assassination', 'assassinated', 'assassin', 'terrorist', 'terrorism', 'massacre', 'massacred', 'genocide', 'holocaust', 'invasion', 'invaded', 'siege', 'sieged', 'coup', 'coup d\'état', 'rebellion', 'revolt', 'revolution', 'riot', 'rioting', 'violence', 'violent', 'bloody', 'bloodshed', 'casualties', 'casualty', 'death toll', 'deaths', 'died', 'dead', 'fatal', 'fatalities', 'slaughter', 'slaughtered', 'execution', 'executed', 'lynching', 'lynched', 'hanging', 'hanged', 'shooting', 'shot', 'gunfire', 'gunfight', 'firefight', 'combat', 'fighting', 'fought', 'defeat', 'defeated', 'surrender', 'surrendered', 'capture', 'captured', 'prisoner', 'imprisoned', 'jailed', 'arrested', 'torture', 'tortured', 'abuse', 'abused', 'crash', 'crashed', 'collision', 'collided', 'disaster', 'tragedy', 'tragic', 'accident', 'accidental', 'fire', 'burned', 'burning', 'destruction', 'destroyed', 'damage', 'damaged', 'wounded', 'injured', 'injury', 'wound', 'wounds', 'injuries'
+    ];
+    
+    const text = eventText.toLowerCase();
+    return violentKeywords.some(keyword => text.includes(keyword));
 }
 
 // ————————————————
@@ -98,8 +114,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 let html = '';
                 // Events section
                 if (eventsData.events && eventsData.events.length > 0) {
-                    html += `<strong>Notable Events on ${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}:</strong><ul style='margin-top:0.5em;'>` +
-                        eventsData.events.slice(0, 7).map(ev => `<li><span style='color:#00c6ff;'>${ev.year}:</span> ${ev.text}</li>`).join('') + '</ul>';
+                    // Filter out violent events
+                    const nonViolentEvents = eventsData.events.filter(ev => !isViolentEvent(ev.text));
+                    
+                    if (nonViolentEvents.length > 0) {
+                        html += `<strong>Notable Events on ${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}:</strong><ul style='margin-top:0.5em;'>` +
+                            nonViolentEvents.slice(0, numberOfEvents).map(ev => `<li><span style='color:#00c6ff;'>${ev.year}:</span> ${ev.text}</li>`).join('') + '</ul>';
+                    } else {
+                        html += '<em>No notable non-violent events found for this date.</em>';
+                    }
                 } else {
                     html += '<em>No notable events found for this date.</em>';
                 }
@@ -122,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                     const sortedBirths = birthsData.births.slice().sort((a, b) => score(b) - score(a));
                     html += `<strong style='display:block; margin-top:1.2em;'>Famous Birthdays:</strong><ul style='margin-top:0.5em;'>` +
-                        sortedBirths.slice(0, 7).map(b => `<li><span style='color:#00c6ff;'>${b.year}:</span> ${b.text}</li>`).join('') + '</ul>';
+                        sortedBirths.slice(0, numberOfBirthdays).map(b => `<li><span style='color:#00c6ff;'>${b.year}:</span> ${b.text}</li>`).join('') + '</ul>';
                 } else {
                     html += '<em>No famous birthdays found for this date.</em>';
                 }
