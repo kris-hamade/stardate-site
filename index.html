@@ -3,11 +3,83 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Stardate Calculator</title>
+    
+    <!-- Primary Meta Tags -->
+    <title>Stardate Calculator - Convert Earth Dates to Star Trek Stardates</title>
+    <meta name="title" content="Stardate Calculator - Convert Earth Dates to Star Trek Stardates" />
+    <meta name="description" content="Free online tool to convert Earth dates to Star Trek stardates. Supports Space Age (1957) and Star Trek (2323) epochs. Calculate stardates instantly with our accurate converter." />
+    <meta name="keywords" content="stardate calculator, star trek stardate, date converter, space age epoch, star trek epoch, stardate conversion, earth date to stardate" />
+    <meta name="author" content="Stardate Calculator" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://stardate-calculator.com/" />
+    <meta property="og:title" content="Stardate Calculator - Convert Earth Dates to Star Trek Stardates" />
+    <meta property="og:description" content="Free online tool to convert Earth dates to Star Trek stardates. Supports Space Age (1957) and Star Trek (2323) epochs." />
+    <meta property="og:image" content="https://stardate-calculator.com/og-image.png" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://stardate-calculator.com/" />
+    <meta property="twitter:title" content="Stardate Calculator - Convert Earth Dates to Star Trek Stardates" />
+    <meta property="twitter:description" content="Free online tool to convert Earth dates to Star Trek stardates. Supports Space Age (1957) and Star Trek (2323) epochs." />
+    <meta property="twitter:image" content="https://stardate-calculator.com/og-image.png" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://stardate-calculator.com/" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#00c6ff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Stardate Calc" />
+    
     <link
       href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto&display=swap"
       rel="stylesheet"
     />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Stardate Calculator",
+      "description": "Convert Earth dates to Star Trek stardates with support for multiple epochs",
+      "url": "https://stardate-calculator.com/",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "creator": {
+        "@type": "Organization",
+        "name": "Stardate Calculator"
+      },
+      "featureList": [
+        "Convert Earth dates to Star Trek stardates",
+        "Support for Space Age (1957) and Star Trek (2323) epochs",
+        "Real-time calculation",
+        "Historical events and famous birthdays",
+        "Responsive design"
+      ]
+    }
+    </script>
+    
     <style>
       body {
         background: linear-gradient(135deg, #232526 0%, #414345 100%);
@@ -185,6 +257,167 @@
         filter: blur(18px) brightness(1.5);
         transition: opacity 0.7s cubic-bezier(0.4, 2, 0.6, 1), filter 1.2s cubic-bezier(0.4, 2, 0.6, 1);
       }
+      .subtitle-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
+      
+      .info-btn {
+        margin-top: -0.5rem;
+      }
+      
+      .subtitle {
+        font-size: 1.2rem;
+        color: #00c6ff;
+        margin: 0;
+        font-family: "Roboto", Arial, sans-serif;
+      }
+      
+      .info-btn {
+        background: rgba(0, 198, 255, 0.1);
+        color: #00c6ff;
+        border: 1px solid #00c6ff;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-family: "Roboto", Arial, sans-serif;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+      }
+      
+      .info-btn:hover {
+        background: rgba(0, 198, 255, 0.2);
+        color: #00eaff;
+        border-color: #00eaff;
+        transform: translateY(-1px);
+      }
+      
+      .info-btn.showing {
+        background: rgba(255, 107, 107, 0.1);
+        color: #ff6b6b;
+        border-color: #ff6b6b;
+      }
+      
+      .info-btn.showing:hover {
+        background: rgba(255, 107, 107, 0.2);
+        color: #ff8a8a;
+        border-color: #ff8a8a;
+      }
+      
+      .calculator-section,
+      .result-section,
+      .events-section,
+      .info-section {
+        margin-bottom: 2rem;
+      }
+      
+      .calculator-section h2,
+      .result-section h2,
+      .events-section h2,
+      .info-section h2 {
+        font-family: "Orbitron", Arial, sans-serif;
+        font-size: 1.8rem;
+        color: #00c6ff;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+      
+      .info-section {
+        background: rgba(0, 198, 255, 0.05);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 198, 255, 0.2);
+        margin: 2rem 0;
+        text-align: left;
+        opacity: 0;
+        filter: blur(8px) brightness(1.3);
+        transition: opacity 0.6s cubic-bezier(0.4, 2, 0.6, 1), filter 1s cubic-bezier(0.4, 2, 0.6, 1);
+      }
+      
+      .info-section.beamed-in {
+        opacity: 1;
+        filter: blur(0) brightness(1);
+      }
+      
+      .info-section p {
+        margin-bottom: 1rem;
+        line-height: 1.6;
+        text-align: left;
+      }
+      
+      .info-section ul {
+        margin: 1rem 0;
+        padding-left: 1.5rem;
+        text-align: left;
+      }
+      
+      .info-section li {
+        margin-bottom: 0.5rem;
+        line-height: 1.5;
+        text-align: left;
+      }
+      
+      small {
+        display: block;
+        font-size: 0.9rem;
+        color: #b0bec5;
+        margin-top: 0.25rem;
+        text-align: center;
+      }
+      
+      .toggle-btn {
+        background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+        color: #fff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-family: "Orbitron", Arial, sans-serif;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 198, 255, 0.3);
+        margin: 1rem auto;
+        display: block;
+      }
+      
+      .toggle-btn:hover {
+        background: linear-gradient(135deg, #00eaff 0%, #0056cc 100%);
+        box-shadow: 0 6px 20px rgba(0, 198, 255, 0.4);
+        transform: translateY(-2px);
+      }
+      
+      .toggle-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 10px rgba(0, 198, 255, 0.3);
+      }
+      
+      .toggle-btn.showing {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+      }
+      
+      .toggle-btn.showing:hover {
+        background: linear-gradient(135deg, #ff8a8a 0%, #ff6b6b 100%);
+        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+      }
+      
+      #notable-events {
+        opacity: 0;
+        filter: blur(8px) brightness(1.3);
+        transition: opacity 0.6s cubic-bezier(0.4, 2, 0.6, 1), filter 1s cubic-bezier(0.4, 2, 0.6, 1);
+      }
+      
+      #notable-events.beamed-in {
+        opacity: 1;
+        filter: blur(0) brightness(1);
+      }
+      
       .transporter-effect.beamed-in {
         opacity: 1;
         filter: blur(0) brightness(1);
@@ -215,31 +448,64 @@
   </head>
   <body>
     <div id="transporter-beam"></div>
-    <div class="container transporter-effect">
-      <h1>Stardate Calculator</h1>
-      <form id="stardate-form">
-        <label for="date">Select Date</label>
-        <input type="date" id="date" required />
-        <label for="epoch">Select Epoch</label>
-        <select id="epoch">
-          <option value="1957">Space Age</option>
-          <option value="2323">Star Trek</option>
-        </select>
-      </form>
-      <div class="result-display">
-        <span>Stardate:</span>
-        <span style="position: relative; display: inline-block">
-          <span id="result" contenteditable="true" tabindex="0"></span>
-          <span class="edit-tooltip">Edit stardate to convert to Earth date</span>
-        </span>
-      </div>
-      <div id="notable-events" style="margin-top:2rem; text-align:left; color:#e0f7fa; font-size:1.1rem;"></div>
-    </div>
+    <main class="container transporter-effect">
+      <header>
+        <h1>Stardate Calculator</h1>
+        <div class="subtitle-container">
+          <p class="subtitle">Convert Earth dates to Star Trek stardates instantly</p>
+        </div>
+        <button id="toggle-info" class="info-btn">More Info</button>
+      </header>
+      <section class="info-section" id="about-section" style="display: none;">
+        <h2>About Stardates</h2>
+        <p>Stardates are a fictional time measurement system used in the Star Trek universe. This calculator converts Earth dates to stardate format using two different epochs:</p>
+        <ul>
+          <li><strong>Space Age (1957):</strong> Based on the beginning of the space age with Sputnik's launch</li>
+          <li><strong>Star Trek (2323):</strong> Based on the Star Trek universe timeline</li>
+        </ul>
+        <p>The calculation uses a formula where each Earth year equals 1000 stardate units, with fractional days calculated proportionally.</p>
+      </section>
+      
+      <section class="calculator-section">
+        <h2>Date Converter</h2>
+        <form id="stardate-form" aria-label="Stardate calculation form">
+          <label for="date">Select Date</label>
+          <input type="date" id="date" required aria-describedby="date-help" />
+          <small id="date-help">Choose any date to convert to stardate format</small>
+          
+          <label for="epoch">Select Epoch</label>
+          <select id="epoch" aria-describedby="epoch-help">
+            <option value="1957">Space Age (1957)</option>
+            <option value="2323">Star Trek (2323)</option>
+          </select>
+          <small id="epoch-help">Choose the reference epoch for stardate calculation</small>
+        </form>
+      </section>
+      
+
+      
+      <section class="result-section">
+        <h2>Stardate Result</h2>
+        <div class="result-display">
+          <span>Stardate:</span>
+          <span style="position: relative; display: inline-block">
+            <span id="result" contenteditable="true" tabindex="0" role="textbox" aria-label="Calculated stardate value"></span>
+            <span class="edit-tooltip">Edit stardate to convert to Earth date</span>
+          </span>
+        </div>
+      </section>
+      
+      <section class="events-section">
+        <h2>Historical Events & Birthdays</h2>
+        <button id="toggle-events" class="toggle-btn">Show Events & Birthdays</button>
+        <div id="notable-events" style="margin-top:2rem; text-align:left; color:#e0f7fa; font-size:1.1rem; display: none;"></div>
+      </section>
+    </main>
 
     <!-- Birthday Modal -->
-    <div id="birthday-modal" class="modal">
+    <div id="birthday-modal" class="modal" role="dialog" aria-labelledby="birthday-message">
       <div class="modal-content">
-        <span id="close-modal" class="close">&times;</span>
+        <span id="close-modal" class="close" aria-label="Close modal">&times;</span>
         <h2 id="birthday-message"></h2>
       </div>
     </div>

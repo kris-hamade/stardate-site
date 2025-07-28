@@ -78,6 +78,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const modalBg = document.getElementById("birthday-modal");
     const container = document.querySelector(".container.transporter-effect");
     const beam = document.getElementById("transporter-beam");
+    const toggleBtn = document.getElementById("toggle-events");
+    const eventsDiv = document.getElementById("notable-events");
+    const infoBtn = document.getElementById("toggle-info");
+    const aboutSection = document.getElementById("about-section");
 
     // Combined handler: stardate + birthday + notable events
     async function onDateChange() {
@@ -96,10 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
             showBirthdayModal(`It's ${match.name}'s birthday! 🥳`);
         }
 
-        // Notable events and famous birthdays fetch (Wikipedia On This Day API)
-        const eventsDiv = document.getElementById('notable-events');
-        if (eventsDiv) {
-            eventsDiv.innerHTML = '<em>Loading notable events and birthdays...</em>';
+        // Store events data for later use
+        if (eventsDiv && !window.eventsData) {
             try {
                 // Fetch events and birthdays in parallel
                 const [eventsResp, birthsResp] = await Promise.all([
@@ -111,6 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const birthsData = await birthsResp.json();
                 console.log('Wikipedia On This Day API events:', eventsData);
                 console.log('Wikipedia On This Day API births:', birthsData);
+                
                 let html = '';
                 // Events section
                 if (eventsData.events && eventsData.events.length > 0) {
@@ -149,9 +152,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     html += '<em>No famous birthdays found for this date.</em>';
                 }
-                eventsDiv.innerHTML = html;
+                window.eventsData = html;
             } catch (e) {
-                eventsDiv.innerHTML = '<em>Could not load notable events or birthdays.</em>';
+                window.eventsData = '<em>Could not load notable events or birthdays.</em>';
             }
         }
     }
@@ -173,6 +176,72 @@ document.addEventListener("DOMContentLoaded", () => {
     closeBtn.addEventListener("click", hideBirthdayModal);
     modalBg.addEventListener("click", e => {
         if (e.target === modalBg) hideBirthdayModal();
+    });
+
+    // Toggle info functionality
+    infoBtn.addEventListener("click", () => {
+        const isShowing = aboutSection.style.display !== "none";
+        
+        if (isShowing) {
+            // Hide info
+            aboutSection.style.display = "none";
+            aboutSection.classList.remove("beamed-in");
+            infoBtn.textContent = "More Info";
+            infoBtn.classList.remove("showing");
+        } else {
+            // Show info
+            aboutSection.style.display = "block";
+            infoBtn.textContent = "Less Info";
+            infoBtn.classList.add("showing");
+            
+            // Trigger beam-in animation
+            setTimeout(() => {
+                aboutSection.classList.add("beamed-in");
+            }, 50);
+        }
+    });
+
+    // Toggle events functionality
+    toggleBtn.addEventListener("click", () => {
+        const isShowing = eventsDiv.style.display !== "none";
+        
+        if (isShowing) {
+            // Hide events
+            eventsDiv.style.display = "none";
+            eventsDiv.classList.remove("beamed-in");
+            toggleBtn.textContent = "Show Events & Birthdays";
+            toggleBtn.classList.remove("showing");
+        } else {
+            // Show events
+            if (window.eventsData) {
+                eventsDiv.innerHTML = window.eventsData;
+                eventsDiv.style.display = "block";
+                toggleBtn.textContent = "Hide Events & Birthdays";
+                toggleBtn.classList.add("showing");
+                
+                // Trigger beam-in animation
+                setTimeout(() => {
+                    eventsDiv.classList.add("beamed-in");
+                }, 50);
+            } else {
+                // If no data yet, show loading and fetch
+                eventsDiv.innerHTML = '<em>Loading notable events and birthdays...</em>';
+                eventsDiv.style.display = "block";
+                toggleBtn.textContent = "Hide Events & Birthdays";
+                toggleBtn.classList.add("showing");
+                
+                // Trigger beam-in animation
+                setTimeout(() => {
+                    eventsDiv.classList.add("beamed-in");
+                }, 50);
+                
+                // Trigger a date change to fetch data
+                const currentDate = dateInput.value;
+                if (currentDate) {
+                    onDateChange();
+                }
+            }
+        }
     });
 
     // Auto-set today & trigger calculation (includes birthday)
